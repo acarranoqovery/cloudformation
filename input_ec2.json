@@ -1,0 +1,7 @@
+{
+    "Parameters": {
+      "InstanceType": "t2.micro",
+      "KeyName": "alessandro",
+      "Subnets": "subnet-0d1b91f88b7e55a3f"
+    }
+}
