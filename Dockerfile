@@ -29,7 +29,6 @@ cd cloudformation
 
 STACK_NAME="qovery-stack-\${QOVERY_JOB_ID%%-*}"
 
-
 case "\$CMD" in
 start)
   echo 'start command invoked'
