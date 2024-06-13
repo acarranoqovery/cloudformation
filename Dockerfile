@@ -31,7 +31,7 @@ STACK_NAME="qovery-stack-\${QOVERY_ENVIRONMENT_ID%%-*}"
 case "\$CMD" in
 start)
   echo 'start command invoked'
-  aws cloudformation deploy --stack-name \$STACK_NAME --template \$CF_TEMPLATE_TO_USE --parameter-overrides \$PARAMETERS 
+  aws cloudformation deploy --stack-name \$STACK_NAME --template \$CT_TEMPLATE_NAME --parameter-overrides \$PARAMETERS 
   aws cloudformation describe-stacks --stack-name \$STACK_NAME --output json --query \"Stacks[0].Outputs\" > /qovery-output/qovery-output.json
   ;;
 
