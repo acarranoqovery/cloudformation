@@ -5,6 +5,7 @@ set -e
 apk update
 apk add dumb-init
 apk add 'aws-cli>2.16' --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
+apk add jq
 adduser -D app
 mkdir /data
 chown -R app:app /data
@@ -33,8 +34,8 @@ case "\$CMD" in
 start)
   echo 'start command invoked'
   aws cloudformation deploy --stack-name \$STACK_NAME --template \$CF_TEMPLATE_NAME --parameter-overrides \$PARAMETERS 
-  aws cloudformation describe-stacks --stack-name \$STACK_NAME --output json --query \"Stacks[0].Outputs\" > \/qovery-output/qovery-output.json
-  jq '[.[] | { (.OutputKey): { "value": .OutputValue, "sensitive": false } }]' \/qovery-output/qovery-output.json
+  aws cloudformation describe-stacks --stack-name \$STACK_NAME --output json --query ""Stacks[0].Outputs"" > /qovery-output/qovery-output.json
+  jq '[.[] | { (.OutputKey): { "value": .OutputValue, "sensitive": false } }]' /qovery-output/qovery-output.json
   ;;
 
 stop)
