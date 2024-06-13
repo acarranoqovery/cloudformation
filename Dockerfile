@@ -33,7 +33,8 @@ case "\$CMD" in
 start)
   echo 'start command invoked'
   aws cloudformation deploy --stack-name \$STACK_NAME --template \$CF_TEMPLATE_NAME --parameter-overrides \$PARAMETERS 
-  aws cloudformation describe-stacks --stack-name \$STACK_NAME --output json --query \"Stacks[0].Outputs\" > /qovery-output/qovery-output.json
+  aws cloudformation describe-stacks --stack-name \$STACK_NAME --output json --query \"Stacks[0].Outputs\" > \/qovery-output/qovery-output.json
+  jq '[.[] | { (.OutputKey): { "value": .OutputValue, "sensitive": false } }]' \/qovery-output/qovery-output.json
   ;;
 
 stop)
