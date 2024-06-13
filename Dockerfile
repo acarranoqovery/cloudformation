@@ -4,7 +4,7 @@ RUN <<EOF
 set -e
 apk update
 apk add dumb-init
-apk add 'aws-cli=2.16' --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
+apk add 'aws-cli>2.16' --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
 adduser -D app
 mkdir /data
 chown -R app:app /data
@@ -32,7 +32,7 @@ STACK_NAME="qovery-stack-\${QOVERY_ENVIRONMENT_ID%%-*}"
 case "\$CMD" in
 start)
   echo 'start command invoked'
-  aws cloudformation deploy --stack-name \$STACK_NAME --template \$CT_TEMPLATE_NAME --parameter-overrides \$PARAMETERS 
+  aws cloudformation deploy --stack-name \$STACK_NAME --template \$CF_TEMPLATE_NAME --parameter-overrides \$PARAMETERS 
   aws cloudformation describe-stacks --stack-name \$STACK_NAME --output json --query \"Stacks[0].Outputs\" > /qovery-output/qovery-output.json
   ;;
 
@@ -76,7 +76,7 @@ chmod +x entrypoint.sh
 cd cloudformation
 EOF
 
-ENV CT_TEMPLATE_NAME=must-be-set-as-env-var
+ENV CF_TEMPLATE_NAME=must-be-set-as-env-var
 ENV AWS_REGION = must-be-set-as-env-var
 ENV AWS_SECRET_ACCESS_KEY = must-be-set-as-env-var
 ENV AWS_ACCESS_KEY_ID = must-be-set-as-env-var
