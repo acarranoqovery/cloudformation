@@ -26,7 +26,7 @@ set -ex
 
 cd cloudformation
 
-STACK_NAME="qovery-stack-\${QOVERY_ENVIRONMENT_ID%%-*}"
+STACK_NAME="qovery-stack-\${QOVERY_JOB_ID%%-*}"
 
 
 case "\$CMD" in
