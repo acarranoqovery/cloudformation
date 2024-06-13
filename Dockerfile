@@ -28,6 +28,8 @@ cd cloudformation
 
 STACK_NAME="qovery-stack-\${QOVERY_ENVIRONMENT_ID%%-*}"
 
+cat "\$PARAMETERS"
+
 case "\$CMD" in
 start)
   echo 'start command invoked'
