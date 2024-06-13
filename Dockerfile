@@ -73,7 +73,6 @@ COPY --chown=app:app . cloudformation
 
 RUN <<EOF
 set -e
-ls -la
 chmod +x entrypoint.sh
 cd cloudformation
 EOF
