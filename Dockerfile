@@ -4,7 +4,7 @@ RUN <<EOF
 set -e
 apk update
 apk add dumb-init
-apk add 'aws-cli>2.16' --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
+apk add 'aws-cli=2.16' --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
 adduser -D app
 mkdir /data
 chown -R app:app /data
