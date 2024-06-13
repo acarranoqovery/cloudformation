@@ -33,8 +33,9 @@ case "\$CMD" in
 start)
   echo 'start command invoked'
   aws cloudformation deploy --stack-name \$STACK_NAME --template \$CF_TEMPLATE_NAME --parameter-overrides \$PARAMETERS 
+  echo 'generating stack output - injecting it as Qovery environment variable for downstream usage'
   aws cloudformation describe-stacks --stack-name \$STACK_NAME --output json --query ""Stacks[0].Outputs"" > /qovery-output/qovery-output.json
-  jq '.[] | { (.OutputKey): { "value": .OutputValue, "sensitive": false } }' /qovery-output/qovery-output.json
+  jq '.[] | { (.OutputKey): { "value": .OutputValue, "type" : "string", "sensitive": false } }' /qovery-output/qovery-output.json
   ;;
 
 stop)
