@@ -18,7 +18,7 @@ RUN cat <<EOF > entrypoint.sh
 
 if [ "\$JOB_INPUT" != '' ]
 then
-  PARAMETERS="file://\$JOB_INPUT"
+  PARAMETERS="file:/\$JOB_INPUT"
 fi
 
 CMD=\$1; shift
