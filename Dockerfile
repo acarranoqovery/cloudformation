@@ -1,5 +1,6 @@
 FROM alpine:3.20.0
-
+  
+  # downloading dependencies and initializing working dir
 RUN <<EOF
 set -e
 apk update
@@ -13,6 +14,13 @@ EOF
 
 WORKDIR /data
 USER app
+
+# Create the entrypoint script with the commands to be run on the environment:
+# - start --> run "cloudformation deploy" + use "cloudformation describe-stacks" to generate the output to be fetched by Qovery and injected later as an environment variable for the other services within the same environment
+# - stop --> nothing
+# - delete --> run "cloudformation delete-stack"
+# other commands are available and can be customized in this Dockerfile
+# the stack name is created based on the QOVERY_JOB_ID environment variable
 
 RUN cat <<EOF > entrypoint.sh
 #!/bin/sh
@@ -77,10 +85,11 @@ chmod +x entrypoint.sh
 cd cloudformation
 EOF
 
+# These env vars shall be set as environment variables within the Qovery console
 ENV CF_TEMPLATE_NAME=must-be-set-as-env-var
-ENV AWS_REGION = must-be-set-as-env-var
-ENV AWS_SECRET_ACCESS_KEY = must-be-set-as-env-var
-ENV AWS_ACCESS_KEY_ID = must-be-set-as-env-var
+ENV AWS_DEFAULT_REGION=must-be-set-as-env-var
+ENV AWS_SECRET_ACCESS_KEY=must-be-set-as-env-var
+ENV AWS_ACCESS_KEY_ID=must-be-set-as-env-var
 
 
 ENTRYPOINT ["/usr/bin/dumb-init", "-v", "--", "/data/entrypoint.sh"]
