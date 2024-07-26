@@ -1,6 +1,6 @@
 FROM alpine:3.20.0
-  
-  # downloading dependencies and initializing working dir
+
+# downloading dependencies and initializing working dir
 RUN <<EOF
 set -e
 apk update
@@ -25,9 +25,9 @@ USER app
 RUN cat <<EOF > entrypoint.sh
 #!/bin/sh
 
-if [ "\$JOB_INPUT" != '' ]
+if [ "\$CF_TEMPLATE_INPUT" != '' ]
 then
-  PARAMETERS="file://\$JOB_INPUT"
+  PARAMETERS="file://\$CF_TEMPLATE_INPUT"
 fi
 
 CMD=\$1; shift
@@ -40,10 +40,24 @@ STACK_NAME="qovery-stack-\${QOVERY_JOB_ID%%-*}"
 case "\$CMD" in
 start)
   echo 'start command invoked'
+  # Check if the stack exists
+  if aws cloudformation list-stacks --query "StackSummaries[?StackName=='\$STACK_NAME'].[StackStatus]" --output text; then
+    # Get the stack status
+    STACK_STATUS=\$(aws cloudformation describe-stacks --stack-name \$STACK_NAME  --query "Stacks[0].StackStatus" --output text)
+    # Check if the status is ROLLBACK_COMPLETE and delete the stack if true
+    if [ "\$STACK_STATUS" == "ROLLBACK_COMPLETE" ]; then
+      echo 'Stack is in ROLLBACK_COMPLETE. Deleting the stack...'
+      aws cloudformation delete-stack --stack-name \$STACK_NAME
+      aws cloudformation wait stack-delete-complete --stack-name \$STACK_NAME
+      echo 'Stack deletion completed.'
+    else
+      echo 'Stack is not in ROLLBACK_COMPLETE. Current status: \$STACK_STATUS'
+    fi
+  fi
   aws cloudformation deploy --stack-name \$STACK_NAME --template \$CF_TEMPLATE_NAME --parameter-overrides \$PARAMETERS 
   echo 'generating stack output - injecting it as Qovery environment variable for downstream usage'
   aws cloudformation describe-stacks --stack-name \$STACK_NAME --output json --query ""Stacks[0].Outputs"" > /data/output.json
-  jq '.[] | { (.OutputKey): { "value": .OutputValue, "type" : "string", "sensitive": false } }' /data/output.json > /qovery-output/qovery-output.json
+  jq -n '[inputs[] | { (.OutputKey): { "value": .OutputValue, "type" : "string", "sensitive": true } }] | add' /data/output.json > /qovery-output/qovery-output.json
   ;;
 
 stop)
